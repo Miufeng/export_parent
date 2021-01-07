@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miufeng.dao.stat.StatDao">
+    <!--//查找生产货物的工厂的销售额
+    public List<Map<String, Object>> getFactoryData(String companyId);-->
+    <select id="getFactoryData" resultType="map">
+        SELECT p.factory_name name,SUM(p.amount) value FROM co_contract_product p
+        WHERE p.company_id=#{companyId}
+        GROUP BY p.factory_name
+    </select>
+
+    <!--//查找货物销售额排行前5
+    public List<Map<String, Object>> getProductData(String companyId);-->
+    <select id="getProductData" resultType="map">
+        SELECT p.product_no `name`, SUM(p.amount) `value` FROM co_contract_product p
+        WHERE p.company_id=#{companyId}
+        GROUP BY p.product_no
+        ORDER BY SUM(p.amount) DESC LIMIT 5
+    </select>
+
+    <!--//分时段查找系统访问次数
+    public List<Map<String, Object>> getOnlineData(String companyId);-->
+    <select id="getOnlineData" resultType="map">
+        SELECT i.A1 `name`, IFNULL(temp.num, 0) `value` FROM st_online_info i
+        LEFT JOIN (
+        SELECT DATE_FORMAT(s.`time`, '%H') h, COUNT(*) num FROM st_sys_log s
+        WHERE company_id='1' GROUP BY h) temp
+        ON i.A1=temp.h
+    </select>
+</mapper>

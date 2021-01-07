@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miufeng.dao.system.RoleDao">
+    <resultMap id="BaseResultMap" type="role">
+        <id column="role_id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="company_id" property="companyId"/>
+        <result column="company_name" property="companyName"/>
+    </resultMap>
+
+    <!--查询全部-->
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from pe_role where company_id=#{company}
+    </select>
+
+    <!--根据id查询-->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from pe_role where role_id = #{id}
+    </select>
+
+    <!--//根据角色id查找权限id
+    List<String> findModuleIdByRoleId(String roleid);-->
+    <select id="findModuleIdByRoleId" resultType="string">
+        select module_id from pe_role_module where role_id=#{roleid}
+    </select>
+
+    <!--删除-->
+    <delete id="delete">
+        delete from pe_role where role_id = #{id}
+    </delete>
+
+    <!--保存-->
+    <insert id="save">
+        insert into pe_role (role_id, name, remark, order_no,company_id, company_name)
+        values (#{id}, #{name}, #{remark}, #{orderNo}, #{companyId}, #{companyName})
+    </insert>
+
+    <!--更新-->
+    <update id="update">
+        update pe_role
+        set name = #{name},
+          remark = #{remark},
+          order_no = #{orderNo}
+        where role_id = #{id}
+    </update>
+
+    <!--//删除指定角色的所有权限
+    void deleteModuleByRoleId(String roleid);-->
+    <delete id="deleteModuleByRoleId">
+        delete from pe_role_module where role_id=#{roleid}
+    </delete>
+
+    <!--//为指定的角色添加权限
+    void addRoleModules(String roleid, String[] moduleIds);-->
+    <insert id="addRoleModules">
+        insert into pe_role_module values
+        <foreach collection="moduleIds" item="moduleId" separator=",">
+            (#{roleid}, #{moduleId})
+        </foreach>
+    </insert>
+</mapper>

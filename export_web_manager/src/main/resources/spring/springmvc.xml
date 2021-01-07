@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--1.包扫描-->
+    <context:component-scan base-package="com.miufeng.web"/>
+
+    <!--2.配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--配置前缀   WEB-INF是一个受保护的目录，外界都无法直接通过浏览器去访问，只能通过后台程序转发过去 -->
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--3.注册类型转换器-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <ref bean="stringToDateConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <!--4.开启注解驱动：开启springmvc三大组件-->
+    <!--把类型转换器的工厂交给注解驱动去启动-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+    <!--开启AOP注解扫描,扫描切面类的注解，@Aspect @PointCut、@Around-->
+    <aop:aspectj-autoproxy/>
+
+    <!--配置dubbo-->
+    <!--应用名称-->
+    <dubbo:application name="export_web_manager"/>
+
+    <!--注册中心地址-->
+    <dubbo:registry address="zookeeper://192.168.223.128" port="2181"/>
+
+    <!--包扫描-->
+    <dubbo:annotation package="com.miufeng.controller"/>
+
+    <!--加载七牛配置文件-->
+    <context:property-placeholder location="classpath:qiniu.properties"/>
+
+    <!--配置文件解析器 易错点：id值是固定不变-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--配置上传文件的最大限制 ， 单位是字节-->
+        <property name="maxUploadSize" value="#{1024*1024*10}"/>
+    </bean>
+</beans>

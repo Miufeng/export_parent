@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--1.定义任务的详情(你要干什么)-->
+    <!--创建任务类对象-->
+    <bean id="myTask" class="com.miufeng.web.task.MyTask"/>
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!--任务对象-->
+        <property name="targetObject" ref="myTask"/>
+        <!--任务的方法-->
+        <property name="targetMethod" value="showTime"/>
+    </bean>
+
+    <!--2.定义触发器（什么时间出发上面的事情）-->
+    <bean id="trigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!--任务详情-->
+        <property name="jobDetail" ref="jobDetail"/>
+
+        <!--时间表达式 : 秒  分 时 日 月 周 [年]
+               注意：
+                       1.周与日是冲突的,只能写一个。   1（日）  1  1(周) 2021 , 不能指定的值使用？表示
+                       2.年是可以省略不写的。
+           需求： 每两秒执行一次当前系统时间
+        -->
+        <property name="cronExpression" value="0/2 * * * * ? 2022"/>
+    </bean>
+
+    <!--3.把触发器交给任务调度工厂-->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <array>
+                <ref bean="trigger"/>
+            </array>
+        </property>
+    </bean>
+
+</beans>

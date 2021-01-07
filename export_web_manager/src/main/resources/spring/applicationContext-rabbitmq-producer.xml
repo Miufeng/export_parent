@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--1. 创建连接工厂-->
+    <rabbit:connection-factory id="connectionFactory" host="127.0.0.1" port="5672" username="miufeng"
+                               password="123" virtual-host="/miufeng"/>
+
+
+    <!--2. 创建admin对象管理连接-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--3. 创建队列-->
+    <rabbit:queue name="email-queue"/>
+
+    <!--4. 创建交换机-->
+    <rabbit:topic-exchange name="email-exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="email-queue" pattern="user.#"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+
+    <!--5. 创建消息类型转换器-->
+    <bean  id="converter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter"/>
+
+    <!--6. 创建rabbittemplate对象-->
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory" message-converter="converter"/>
+
+</beans>

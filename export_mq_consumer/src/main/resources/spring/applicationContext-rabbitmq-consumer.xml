@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--1. 创建连接工厂-->
+    <rabbit:connection-factory id="connectionFactory" host="127.0.0.1" port="5672" username="miufeng"
+                               password="123" virtual-host="/miufeng"/>
+
+
+    <!--2. 创建admin对象管理连接-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--3.创建监听器-->
+    <bean id="emailListener" class="com.miufeng.listener.EmailListener"/>
+
+
+    <!--4. 把监听器放入到监听器容器中-->
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener ref="emailListener" queue-names="email-queue"/>
+    </rabbit:listener-container>
+</beans>

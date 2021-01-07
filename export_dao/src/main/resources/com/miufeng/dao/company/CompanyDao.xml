@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miufeng.dao.company.CompanyDao">
+
+    <!--为什么要有结果映射器： 由于数据库的列名与实体类的属性名不一致，所以要编写结果映射器-->
+    <resultMap id="BaseResultMap" type="company">
+        <id     column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="expiration_date" property="expirationDate"/>
+        <result column="address" property="address"/>
+        <result column="license_id" property="licenseId"/>
+        <result column="representative" property="representative"/>
+        <result column="phone" property="phone"/>
+        <result column="company_size" property="companySize"/>
+        <result column="industry" property="industry"/>
+        <result column="remarks" property="remarks"/>
+        <result column="state" property="state"/>
+        <result column="balance" property="balance"/>
+        <result column="city" property="city"/>
+    </resultMap>
+
+    <!--查询所有企业-->
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from ss_company
+    </select>
+
+    <!--添加企业
+    void add(Company company);-->
+    <insert id="add">
+        insert into ss_company values (
+            #{id},
+            #{name},
+            #{expirationDate},
+            #{address},
+            #{licenseId},
+            #{representative},
+            #{phone},
+            #{companySize},
+            #{industry},
+            #{remarks},
+            #{state},
+            #{balance},
+            #{city}
+        )
+    </insert>
+
+    <!--修改企业信息
+    void update(Company company);-->
+    <update id="update">
+        update ss_company set
+            name=#{name},
+            expiration_date=#{expirationDate},
+            address=#{address},
+            license_id=#{licenseId},
+            representative=#{representative},
+            phone=#{phone},
+            company_size=#{companySize},
+            industry=#{industry},
+            remarks=#{remarks},
+            state=#{state},
+            balance=#{balance},
+            city=#{city}
+        where id=#{id}
+    </update>
+
+    <!--根据id查询企业信息
+    Company findById(String id);-->
+    <select id="findById" resultMap="BaseResultMap">
+        select * from ss_company where id=#{id}
+    </select>
+
+    <!--根据id删除企业
+    void delete(String id);-->
+    <delete id="delete">
+        delete from ss_company where id=#{id}
+    </delete>
+</mapper>

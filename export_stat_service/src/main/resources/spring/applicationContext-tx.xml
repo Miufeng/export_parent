@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--1.包扫描-->
+    <context:component-scan base-package="com.miufeng.service"/>
+    
+    <!--2.配置spring声明式事务-->
+    <!--2.1配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--2.2配置事务通知方法-->
+    <!--配置事务的通知规则 : 定义哪些方法需要事务，哪些方法不需要事务-->
+    <tx:advice id="ad" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="query*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="search*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="select*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--2.3配置事务切面-->
+    <aop:config>
+        <!--切入点表达式   切入点表达式： 【权限修饰符】 返回值类型 包名.类名.方法名（形式参数）-->
+        <aop:pointcut id="pt" expression="execution(* com.miufeng.service.*.impl.*.*(..))"/>
+        <aop:advisor advice-ref="ad" pointcut-ref="pt"/>
+    </aop:config>
+</beans>
